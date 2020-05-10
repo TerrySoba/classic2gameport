@@ -304,7 +304,7 @@ U 1 1 5EB17529
 P 1700 3450
 F 0 "J2" H 1370 3546 50  0000 R CNN
 F 1 "AVR-ISP-10" H 1370 3455 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x05_P2.54mm_Vertical" V 1450 3500 50  0001 C CNN
+F 2 "Connector_Multicomp:Multicomp_MC9A12-1034_2x05_P2.54mm_Vertical" V 1450 3500 50  0001 C CNN
 F 3 " ~" H 425 2900 50  0001 C CNN
 	1    1700 3450
 	1    0    0    -1  
@@ -555,7 +555,7 @@ U 1 1 5EB8F3B3
 P 1600 6450
 F 0 "J3" H 1518 6767 50  0000 C CNN
 F 1 "Conn_01x04" H 1518 6676 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 1600 6450 50  0001 C CNN
+F 2 "Connector_Molex:Molex_KK-254_AE-6410-04A_1x04_P2.54mm_Vertical" H 1600 6450 50  0001 C CNN
 F 3 "~" H 1600 6450 50  0001 C CNN
 	1    1600 6450
 	-1   0    0    -1  
