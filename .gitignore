@@ -1,0 +1,7 @@
+*-cache.lib
+*-bak
+*.ses
+*.dsn
+fp-info-cache
+cad/
+classic2gameport.csv
