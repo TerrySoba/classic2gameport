@@ -32,10 +32,7 @@ typedef struct {
 
 uint8_t rawData[6];
 
-#define REPORT_BUFFER_COUNT 9
-
-static report_t reportBuffer[REPORT_BUFFER_COUNT];
-static int reportBufferPos = 0;
+static report_t report;
 
 /* I2C initialization */
 void myI2CInit(void) {
@@ -76,43 +73,41 @@ unsigned char fillReportWithWii(void) {
     }
 
     // split out buttons
-#define BTN_rT      GET_BIT(~rawData[4], 1)
-#define BTN_start   GET_BIT(~rawData[4], 2)
-#define BTN_home    GET_BIT(~rawData[4], 3)
-#define BTN_select  GET_BIT(~rawData[4], 4)
-#define BTN_lT      GET_BIT(~rawData[4], 5)
-#define BTN_down    GET_BIT(~rawData[4], 6)
-#define BTN_right   GET_BIT(~rawData[4], 7)
-#define BTN_up      GET_BIT(~rawData[5], 0)
-#define BTN_left    GET_BIT(~rawData[5], 1)
-#define BTN_rZ      GET_BIT(~rawData[5], 2)
-#define BTN_x       GET_BIT(~rawData[5], 3)
-#define BTN_a       GET_BIT(~rawData[5], 4)
-#define BTN_y       GET_BIT(~rawData[5], 5)
-#define BTN_b       GET_BIT(~rawData[5], 6)
-#define BTN_lZ      GET_BIT(~rawData[5], 7)
+    #define BTN_rT      GET_BIT(~rawData[4], 1)
+    #define BTN_start   GET_BIT(~rawData[4], 2)
+    #define BTN_home    GET_BIT(~rawData[4], 3)
+    #define BTN_select  GET_BIT(~rawData[4], 4)
+    #define BTN_lT      GET_BIT(~rawData[4], 5)
+    #define BTN_down    GET_BIT(~rawData[4], 6)
+    #define BTN_right   GET_BIT(~rawData[4], 7)
+    #define BTN_up      GET_BIT(~rawData[5], 0)
+    #define BTN_left    GET_BIT(~rawData[5], 1)
+    #define BTN_rZ      GET_BIT(~rawData[5], 2)
+    #define BTN_x       GET_BIT(~rawData[5], 3)
+    #define BTN_a       GET_BIT(~rawData[5], 4)
+    #define BTN_y       GET_BIT(~rawData[5], 5)
+    #define BTN_b       GET_BIT(~rawData[5], 6)
+    #define BTN_lZ      GET_BIT(~rawData[5], 7)
 
-    // button mappings (button 0..15)
-#define BUTTON_X              0
-#define BUTTON_A              1
-#define BUTTON_B              2
-#define BUTTON_Y              3
-#define BUTTON_START          4
-#define BUTTON_SELECT         5
-#define BUTTON_HOME           6
-#define BUTTON_RIGHT_TRIGGER  7
-#define BUTTON_LEFT_TRIGGER   8
-#define BUTTON_RIGHT_Z        9
-#define BUTTON_LEFT_Z        10
-#define BUTTON_UP            11
-#define BUTTON_DOWN          12
-#define BUTTON_LEFT          13
-#define BUTTON_RIGHT         14
-#define NO_BUTTON            15
+        // button mappings (button 0..15)
+    #define BUTTON_X              0
+    #define BUTTON_A              1
+    #define BUTTON_B              2
+    #define BUTTON_Y              3
+    #define BUTTON_START          4
+    #define BUTTON_SELECT         5
+    #define BUTTON_HOME           6
+    #define BUTTON_RIGHT_TRIGGER  7
+    #define BUTTON_LEFT_TRIGGER   8
+    #define BUTTON_RIGHT_Z        9
+    #define BUTTON_LEFT_Z        10
+    #define BUTTON_UP            11
+    #define BUTTON_DOWN          12
+    #define BUTTON_LEFT          13
+    #define BUTTON_RIGHT         14
+    #define NO_BUTTON            15
 
-#define SET_BUTTON(BUTTON, SOURCE) SET_BIT_VALUE(reportBuffer[reportBufferPos].buttons[BUTTON/8],BUTTON%8,SOURCE)
-
-    reportBufferPos = (reportBufferPos + 1) % REPORT_BUFFER_COUNT;
+    #define SET_BUTTON(BUTTON, SOURCE) SET_BIT_VALUE(report.buttons[BUTTON/8],BUTTON%8,SOURCE)
 
     SET_BUTTON(BUTTON_X, BTN_x);
     SET_BUTTON(BUTTON_A, BTN_a);
@@ -176,21 +171,6 @@ typedef enum {
 
 
 /**
- * This enum amiga mouse signals to the io pin of PORTD
- * of the ATMEGA8.
- *  e.g. 3 means PD3.
- */
-typedef enum {
-	MOUSE_V_PULSE = 7,
-	MOUSE_VQ_PULSE = 5,
-	MOUSE_H_PULSE = 6,
-	MOUSE_HQ_PULSE = 4,
-	MOUSE_LEFT_BUTTON = 2,
-	MOUSE_RIGHT_BUTTON = 0,
-} mouse_signals;
-
-
-/**
  * Sets the megadrive port with given button number (0-7)
  * to pressed state if pressed is true, to non pressed
  * state otherwise.
@@ -217,16 +197,8 @@ void setMegadriveButton(megadrive_button button, bool pressed)
  * This function takes the global variable reportBuffer
  * and sets the megadrive port accordingly.
  */
-void setMegadrive(bool jumpAndRunMode, bool delayMode)
+void setMegadrive(bool jumpAndRunMode)
 {
-    report_t report;
-    if(delayMode)
-    {
-        report = reportBuffer[(reportBufferPos + 1) % REPORT_BUFFER_COUNT];
-    } else {
-        report = reportBuffer[reportBufferPos];
-    }
-
     if (jumpAndRunMode)
     {
         setMegadriveButton(MEGADRIVE_A, false);
@@ -247,67 +219,6 @@ void setMegadrive(bool jumpAndRunMode, bool delayMode)
     setMegadriveButton(MEGADRIVE_LEFT, buttonPressed(BUTTON_LEFT, report));
     setMegadriveButton(MEGADRIVE_RIGHT, buttonPressed(BUTTON_RIGHT, report));
     setMegadriveButton(MEGADRIVE_DOWN, buttonPressed(BUTTON_DOWN, report));
-}
-
-
-static volatile unsigned int mouseStateHorizontal = 0;
-static volatile unsigned int mouseStateVertical = 0;
-
-
-void setAmigaMouse();
-
-void setAmigaMouse()
-{
-	report_t report = reportBuffer[reportBufferPos];
-
-	if (buttonPressed(BUTTON_LEFT, report)) --mouseStateHorizontal;
-	if (buttonPressed(BUTTON_RIGHT, report)) ++mouseStateHorizontal;
-	if (buttonPressed(BUTTON_DOWN, report)) ++mouseStateVertical;
-	if (buttonPressed(BUTTON_UP, report)) --mouseStateVertical;
-
-	switch(mouseStateHorizontal % 4)
-	{
-	case 0:
-		setMegadriveButton(MOUSE_H_PULSE, 0);
-		setMegadriveButton(MOUSE_HQ_PULSE, 0);
-		break;
-	case 1:
-		setMegadriveButton(MOUSE_H_PULSE, 1);
-		setMegadriveButton(MOUSE_HQ_PULSE, 0);
-		break;
-	case 2:
-		setMegadriveButton(MOUSE_H_PULSE, 1);
-		setMegadriveButton(MOUSE_HQ_PULSE, 1);
-		break;
-	case 3:
-		setMegadriveButton(MOUSE_H_PULSE, 0);
-		setMegadriveButton(MOUSE_HQ_PULSE, 1);
-		break;
-	}
-
-	switch(mouseStateVertical % 4)
-	{
-	case 0:
-		setMegadriveButton(MOUSE_V_PULSE, 0);
-		setMegadriveButton(MOUSE_VQ_PULSE, 0);
-		break;
-	case 1:
-		setMegadriveButton(MOUSE_V_PULSE, 1);
-		setMegadriveButton(MOUSE_VQ_PULSE, 0);
-		break;
-	case 2:
-		setMegadriveButton(MOUSE_V_PULSE, 1);
-		setMegadriveButton(MOUSE_VQ_PULSE, 1);
-		break;
-	case 3:
-		setMegadriveButton(MOUSE_V_PULSE, 0);
-		setMegadriveButton(MOUSE_VQ_PULSE, 1);
-		break;
-	}
-
-
-	setMegadriveButton(MOUSE_LEFT_BUTTON, buttonPressed(BUTTON_A, report));
-	setMegadriveButton(MOUSE_RIGHT_BUTTON, buttonPressed(BUTTON_B, report));
 }
 
 /**
@@ -332,8 +243,6 @@ typedef enum _Mode
 	UNINITIALIZED = 0,
 	MEGADRIVE_MODE = 1,
 	JUMP_RUN_MODE = 2,
-	AMIGA_MOUSE_MODE = 3,
-	DELAY_MODE = 4
 } AdapterMode;
 
 int main(void)
@@ -348,12 +257,9 @@ start:
      * the status of the watchdog (on/off, period) is PRESERVED OVER RESET!
      */
 
-    // initialize reportBuffer with 0
-    for (int i = 0; i < REPORT_BUFFER_COUNT; ++i)
-    {
-        reportBuffer[i].buttons[0] = 0;
-        reportBuffer[i].buttons[1] = 0;
-    }
+
+    report.buttons[0] = 0;
+    report.buttons[1] = 0;
 
     // make PORTC_0 (LED) an output pin
     SET_BIT(DDRC, 0);
@@ -387,15 +293,8 @@ start:
         lastAdapterMode = adapterMode;
 
         fillReportWithWii();
+        setMegadrive(adapterMode == JUMP_RUN_MODE);
         
-        if (adapterMode == AMIGA_MOUSE_MODE) {
-        	setAmigaMouse();
-        } else {
-        	setMegadrive(adapterMode == JUMP_RUN_MODE, adapterMode == DELAY_MODE);
-        }
-
-        report_t report = reportBuffer[reportBufferPos];
-
         if (buttonPressed(BUTTON_B, report) && buttonPressed(BUTTON_SELECT, report) && buttonPressed(BUTTON_UP, report))
         {
         	adapterMode = JUMP_RUN_MODE;
@@ -407,19 +306,6 @@ start:
         	adapterMode = MEGADRIVE_MODE;
         	CLR_BIT(PORTC, 0);
         }
-
-        if (buttonPressed(BUTTON_B, report) && buttonPressed(BUTTON_SELECT, report) && buttonPressed(BUTTON_LEFT, report))
-        {
-        	adapterMode = AMIGA_MOUSE_MODE;
-            CLR_BIT(PORTC, 0);
-        }
-
-        if (buttonPressed(BUTTON_A, report) && buttonPressed(BUTTON_START, report) && buttonPressed(BUTTON_RIGHT, report))
-        {
-            adapterMode = DELAY_MODE;
-            SET_BIT(PORTC, 0);
-        }
-
 
         /* If the gamepad starts feeding us 0xff, we have to restart to recover */
         if ((rawData[0] == 0xff) && (rawData[1] == 0xff) && (rawData[2] == 0xff) && (rawData[3] == 0xff) && (rawData[4] == 0xff) && (rawData[5] == 0xff)) {
