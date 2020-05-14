@@ -1,10 +1,8 @@
 /* Name: main.c
- * Project: classic2mega, a Wii Classic Controller to mega drive / genesis adapter
+ * Project: classic2gameport, a Wii Classic Controller to PC Gameport adapter
  * Author: Torsten Stremlau <torsten@stremlau.de>
- * Creation Date: 2015-07-11
+ * Creation Date: 2020-05-14
  * Tabsize: 4
- *
- * License: GNU GPL v2 (see License.txt), GNU GPL v3
  */
 
 #define TW_SCL 100000 // TWI frequency in Hz
@@ -48,10 +46,9 @@ unsigned char myWiiInit(void) {
 
 
 unsigned char fillReportWithWii(void) {
-    uint8_t i;
     unsigned char buf[6];
 
-    /* send 0x00 to the controller to tell him we want data! */
+    /* send 0x00 to the controller to tell it we want data! */
     buf[0] = 0x00;
     
     if (!twi_send_data(SLAVE_ADDR, buf, 1)) {
@@ -59,16 +56,13 @@ unsigned char fillReportWithWii(void) {
     }
 
     _delay_ms(2);
-    // _delay_us(100);
 
     // ------ now get 6 bytes of data
-    
     if (!(twi_receive_data(SLAVE_ADDR, buf, 6))) {
         goto fend;
     }
 
-    // for (i = 0; i < 6; i++) {
-    for (i = 0; i < 6; i++) {
+    for (uint8_t i = 0; i < 6; ++i) {
         rawData[i] = (buf[i] ^ 0x17) + 0x17; // decrypt data
     }
 
@@ -125,26 +119,20 @@ unsigned char fillReportWithWii(void) {
     SET_BUTTON(BUTTON_LEFT, BTN_left);
     SET_BUTTON(BUTTON_RIGHT, BTN_right);
     SET_BUTTON(NO_BUTTON, 0);
-
-
+    
     return 1;
 
 fend:
-    // TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
     _delay_us(20);
-
-    /*all_fine:*/
-    
     twi_stop();
     return 0;
 }
 
 
 /* This function sets up stuff */
-void myInit(void) {
-
+void myInit(void)
+{
     _delay_ms(300);
-    // SET_BIT(PORTC,0);
     myI2CInit();
     _delay_ms(120);
     myWiiInit();
@@ -153,101 +141,142 @@ void myInit(void) {
 }
 
 
-/**
- * This enum maps megadrive buttons to the io pin of PORTD
- * of the ATMEGA8.
- *  e.g. 3 means PD3.
- */
-typedef enum {
-    MEGADRIVE_A = 3,
-    MEGADRIVE_B = 2,
-    MEGADRIVE_C = 0,
-    MEGADRIVE_START = 1,
-    MEGADRIVE_LEFT = 5,
-    MEGADRIVE_RIGHT = 4,
-    MEGADRIVE_UP = 7,
-    MEGADRIVE_DOWN = 6
-} megadrive_button;
-
-
-/**
- * Sets the megadrive port with given button number (0-7)
- * to pressed state if pressed is true, to non pressed
- * state otherwise.
- * \param button The megadrive button to set
- * \param pressed If true, button will be set to pressed, to unpressed otherwise.
- */
-void setMegadriveButton(megadrive_button button, bool pressed)
+void setGameportButton(uint8_t button, bool pressed)
 {
     if (pressed)
     {
         // make pin an output and set to low
-        CLR_BIT(PORTD, button);
-        SET_BIT(DDRD, button);
+        CLR_BIT(PORTC, button);
+        SET_BIT(DDRC, button);
     } else {
         // make pin an input (high impedance) and set to high (pull up)
-        CLR_BIT(DDRD, button);
-        SET_BIT(PORTD, button);
+        CLR_BIT(DDRC, button);
+        SET_BIT(PORTC, button);
+    }
+}
+
+
+
+
+typedef enum 
+{
+    AXIS_X = 0,
+    AXIS_Y = 2,
+} Axis;
+
+typedef enum
+{
+    POS_MIN,
+    POS_NEUTRAL,
+    POS_MAX,
+} Position;
+
+
+void setAxis(Axis axis, Position pos)
+{
+    switch(pos)
+    {
+        case POS_MIN:
+            SET_BIT(PORTD, 0 + axis);
+            CLR_BIT(PORTD, 1 + axis);
+            break;
+        case POS_NEUTRAL:
+            CLR_BIT(PORTD, 0 + axis);
+            SET_BIT(PORTD, 1 + axis);
+            break;
+        case POS_MAX:
+            SET_BIT(PORTD, 0 + axis);
+            SET_BIT(PORTD, 1 + axis);
+            break;
     }
 }
 
 #define buttonPressed(button, buffer) ((buffer.buttons[button/8] & (1 << (button%8))) != 0)
 
 /**
- * This function takes the global variable reportBuffer
- * and sets the megadrive port accordingly.
+ * This function takes the global variable report
+ * and sets the gameport output accordingly.
  */
-void setMegadrive(bool jumpAndRunMode)
+void setGameport(bool jumpAndRunMode)
 {
+    bool jump = false;
+
     if (jumpAndRunMode)
     {
-        setMegadriveButton(MEGADRIVE_A, false);
-        setMegadriveButton(MEGADRIVE_B, buttonPressed(BUTTON_X, report) || buttonPressed(BUTTON_Y, report));
-        setMegadriveButton(MEGADRIVE_C, false);
-        setMegadriveButton(MEGADRIVE_START, false);
-        setMegadriveButton(MEGADRIVE_UP, buttonPressed(BUTTON_A, report) || buttonPressed(BUTTON_B, report) || buttonPressed(BUTTON_UP, report));
+        setGameportButton(0, buttonPressed(BUTTON_Y, report));
+        setGameportButton(1, buttonPressed(BUTTON_A, report));
+        jump = buttonPressed(BUTTON_B, report);
     }
     else
     {
-        setMegadriveButton(MEGADRIVE_A, buttonPressed(BUTTON_Y, report));
-        setMegadriveButton(MEGADRIVE_B, buttonPressed(BUTTON_X, report) || buttonPressed(BUTTON_B, report));
-        setMegadriveButton(MEGADRIVE_C, buttonPressed(BUTTON_A, report));
-        setMegadriveButton(MEGADRIVE_START, buttonPressed(BUTTON_START, report));
-        setMegadriveButton(MEGADRIVE_UP, buttonPressed(BUTTON_UP, report));
+        setGameportButton(0, buttonPressed(BUTTON_B, report));
+        setGameportButton(1, buttonPressed(BUTTON_Y, report));
+        setGameportButton(2, buttonPressed(BUTTON_A, report));
+        setGameportButton(3, buttonPressed(BUTTON_X, report));
     }
 
-    setMegadriveButton(MEGADRIVE_LEFT, buttonPressed(BUTTON_LEFT, report));
-    setMegadriveButton(MEGADRIVE_RIGHT, buttonPressed(BUTTON_RIGHT, report));
-    setMegadriveButton(MEGADRIVE_DOWN, buttonPressed(BUTTON_DOWN, report));
+
+    if (buttonPressed(BUTTON_LEFT, report))
+    {
+        setAxis(AXIS_X, POS_MIN);
+    }
+    else if (buttonPressed(BUTTON_RIGHT, report))
+    {
+        setAxis(AXIS_X, POS_MAX);
+    }
+    else
+    {
+        setAxis(AXIS_X, POS_NEUTRAL);
+    }
+
+    if (buttonPressed(BUTTON_UP, report) || jump)
+    {
+        setAxis(AXIS_Y, POS_MIN);
+    }
+    else if (buttonPressed(BUTTON_DOWN, report))
+    {
+        setAxis(AXIS_Y, POS_MAX);
+    }
+    else
+    {
+        setAxis(AXIS_Y, POS_NEUTRAL);
+    }
+    
 }
 
-/**
- *  This function sets the outputs used by the megadrive plug to
- *  high impedance and pull down.
- */
-void setupMegadrive()
-{
-    // all inputs == high impedance
-    DDRD = 0x00;
 
-    // all low == pulldown
-    PORTD = 0x00;
+void setupGameport()
+{
+    // set buttons to off position
+    CLR_BIT(DDRC, 0);
+    CLR_BIT(DDRC, 1);
+    CLR_BIT(DDRC, 2);
+    CLR_BIT(DDRC, 3);
+    CLR_BIT(PORTC, 0);
+    CLR_BIT(PORTC, 1);
+    CLR_BIT(PORTC, 2);
+    CLR_BIT(PORTC, 3);
+
+    // set gameport axes to neutral
+    SET_BIT(DDRD, 0);
+    SET_BIT(DDRD, 1);
+    SET_BIT(DDRD, 2);
+    SET_BIT(DDRD, 3);
+    setAxis(AXIS_X, POS_NEUTRAL);
+    setAxis(AXIS_Y, POS_NEUTRAL);
 }
 
 
-
-/* ------------------------------------------------------------------------- */
-
-typedef enum _Mode
+typedef enum
 {
-	UNINITIALIZED = 0,
-	MEGADRIVE_MODE = 1,
-	JUMP_RUN_MODE = 2,
+	UNINITIALIZED,
+	NORMAL_MODE,
+	JUMP_RUN_MODE,
 } AdapterMode;
 
 int main(void)
 {
-	AdapterMode adapterMode = MEGADRIVE_MODE;
+	AdapterMode adapterMode = NORMAL_MODE;
 	AdapterMode lastAdapterMode = UNINITIALIZED;
 
 start:
@@ -261,23 +290,21 @@ start:
     report.buttons[0] = 0;
     report.buttons[1] = 0;
 
-    // make PORTC_0 (LED) an output pin
-    SET_BIT(DDRC, 0);
+    // make PORTB_0 (LED) an output pin
+    SET_BIT(DDRB, 0);
 
     for (int i = 0; i < 5; ++i)
     {
-	SET_BIT(PORTC, 0);
-	_delay_ms(50);
-	CLR_BIT(PORTC, 0);
-	_delay_ms(50);
-	
+        SET_BIT(PORTB, 0);
+        _delay_ms(25);
+        CLR_BIT(PORTB, 0);
+        _delay_ms(25);
     }
-
 
     sei();
 
     myInit();
-    setupMegadrive();
+    setupGameport();
 
     for(;;){                /* main event loop */
         wdt_reset();
@@ -285,26 +312,21 @@ start:
         // check if mode has changed, if it did change then reset ports
         if (adapterMode != lastAdapterMode)
         {
-        	for (int i = 0; i < 8; ++i)
-            {
-            	setMegadriveButton(i, 0);
-            }
+        	setupGameport();
         }
         lastAdapterMode = adapterMode;
 
         fillReportWithWii();
-        setMegadrive(adapterMode == JUMP_RUN_MODE);
+        setGameport(adapterMode == JUMP_RUN_MODE);
         
-        if (buttonPressed(BUTTON_B, report) && buttonPressed(BUTTON_SELECT, report) && buttonPressed(BUTTON_UP, report))
+        if (buttonPressed(BUTTON_SELECT, report) && buttonPressed(BUTTON_UP, report))
         {
         	adapterMode = JUMP_RUN_MODE;
-        	CLR_BIT(PORTC, 0);
         }
 
-        if (buttonPressed(BUTTON_B, report) && buttonPressed(BUTTON_SELECT, report) && buttonPressed(BUTTON_DOWN, report))
+        if (buttonPressed(BUTTON_SELECT, report) && buttonPressed(BUTTON_DOWN, report))
         {
-        	adapterMode = MEGADRIVE_MODE;
-        	CLR_BIT(PORTC, 0);
+        	adapterMode = NORMAL_MODE;
         }
 
         /* If the gamepad starts feeding us 0xff, we have to restart to recover */

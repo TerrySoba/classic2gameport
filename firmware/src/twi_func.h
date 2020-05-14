@@ -2,12 +2,12 @@
 
 #include <avr/io.h>
 
-/***** ATTENTION ***** ATTENTION ***** ATTENTION *****/
-/*                                                   */
-/* This code has only been tested with the ATMEGA 8  */
-/*        Also seems to work on ATMEGA16A            */
-/*                                                   */
-/***** ATTENTION ***** ATTENTION ***** ATTENTION *****/
+/***** ATTENTION ***** ATTENTION ***** ATTENTION ******/
+/*                                                    */
+/* This code has only been tested with the ATMEGA8(A) */
+/*        Also seems to work on ATMEGA16A             */
+/*                                                    */
+/***** ATTENTION ***** ATTENTION ***** ATTENTION ******/
 
 /*
  * Description:

@@ -13,7 +13,7 @@ project("Classic2Gameport")
 set(PRODUCT_NAME classic2gameport)
 
 ## AVR Chip Configuration
-set(F_CPU 16000000UL)
+set(F_CPU 8000000UL)
 # CPU, you can find the list here:
 # https://gcc.gnu.org/onlinedocs/gcc/AVR-Options.html
 set(MCU atmega8)
@@ -58,4 +58,4 @@ add_custom_target(flash
     COMMAND ${AVRDUDE_COMMAND} -U flash:w:${PRODUCT_NAME}.hex:i)
 
 add_custom_target(fuses
-    COMMAND ${AVRDUDE_COMMAND} -U hfuse:w:${HFUSE}:m -U lfuse:w:${LFUSE}:m)
+    COMMAND ${AVRDUDE_COMMAND} -U hfuse:w:${H_FUSE}:m -U lfuse:w:${L_FUSE}:m)
