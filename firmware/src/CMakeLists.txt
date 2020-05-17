@@ -16,7 +16,7 @@ set(PRODUCT_NAME classic2gameport)
 set(F_CPU 8000000UL)
 # CPU, you can find the list here:
 # https://gcc.gnu.org/onlinedocs/gcc/AVR-Options.html
-set(MCU atmega8)
+set(MCU atmega8a)
 
 # AVR Fuses, must be in concordance with your hardware and F_CPU
 set(H_FUSE 0xD9)

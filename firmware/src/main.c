@@ -2,7 +2,6 @@
  * Project: classic2gameport, a Wii Classic Controller to PC Gameport adapter
  * Author: Torsten Stremlau <torsten@stremlau.de>
  * Creation Date: 2020-05-14
- * Tabsize: 4
  */
 
 #define TW_SCL 100000 // TWI frequency in Hz
@@ -160,8 +159,10 @@ void setGameportButton(uint8_t button, bool pressed)
 
 typedef enum 
 {
-    AXIS_X = 0,
-    AXIS_Y = 2,
+    AXIS_X_1 = 0,
+    AXIS_Y_1 = 2,
+    AXIS_X_2 = 4,
+    AXIS_Y_2 = 6,
 } Axis;
 
 typedef enum
@@ -193,19 +194,36 @@ void setAxis(Axis axis, Position pos)
 
 #define buttonPressed(button, buffer) ((buffer.buttons[button/8] & (1 << (button%8))) != 0)
 
+
+typedef enum
+{
+    UNINITIALIZED,
+    NORMAL_MODE,
+    JUMP_RUN_MODE,
+    NES_MODE,
+} AdapterMode;
+
+
 /**
  * This function takes the global variable report
  * and sets the gameport output accordingly.
  */
-void setGameport(bool jumpAndRunMode)
+void setGameport(AdapterMode mode)
 {
     bool jump = false;
 
-    if (jumpAndRunMode)
+    if (mode == JUMP_RUN_MODE)
     {
         setGameportButton(0, buttonPressed(BUTTON_Y, report));
         setGameportButton(1, buttonPressed(BUTTON_A, report));
         jump = buttonPressed(BUTTON_B, report);
+    }
+    else if (mode == NES_MODE)
+    {
+        setGameportButton(0, buttonPressed(BUTTON_A, report));
+        setGameportButton(1, buttonPressed(BUTTON_B, report));
+        setGameportButton(2, buttonPressed(BUTTON_START, report));
+        setGameportButton(3, buttonPressed(BUTTON_SELECT, report));
     }
     else
     {
@@ -218,28 +236,28 @@ void setGameport(bool jumpAndRunMode)
 
     if (buttonPressed(BUTTON_LEFT, report))
     {
-        setAxis(AXIS_X, POS_MIN);
+        setAxis(AXIS_X_1, POS_MIN);
     }
     else if (buttonPressed(BUTTON_RIGHT, report))
     {
-        setAxis(AXIS_X, POS_MAX);
+        setAxis(AXIS_X_1, POS_MAX);
     }
     else
     {
-        setAxis(AXIS_X, POS_NEUTRAL);
+        setAxis(AXIS_X_1, POS_NEUTRAL);
     }
 
     if (buttonPressed(BUTTON_UP, report) || jump)
     {
-        setAxis(AXIS_Y, POS_MIN);
+        setAxis(AXIS_Y_1, POS_MIN);
     }
     else if (buttonPressed(BUTTON_DOWN, report))
     {
-        setAxis(AXIS_Y, POS_MAX);
+        setAxis(AXIS_Y_1, POS_MAX);
     }
     else
     {
-        setAxis(AXIS_Y, POS_NEUTRAL);
+        setAxis(AXIS_Y_1, POS_NEUTRAL);
     }
     
 }
@@ -262,22 +280,21 @@ void setupGameport()
     SET_BIT(DDRD, 1);
     SET_BIT(DDRD, 2);
     SET_BIT(DDRD, 3);
-    setAxis(AXIS_X, POS_NEUTRAL);
-    setAxis(AXIS_Y, POS_NEUTRAL);
+    SET_BIT(DDRD, 4);
+    SET_BIT(DDRD, 5);
+    SET_BIT(DDRD, 6);
+    SET_BIT(DDRD, 7);
+    setAxis(AXIS_X_1, POS_NEUTRAL);
+    setAxis(AXIS_Y_1, POS_NEUTRAL);
+    setAxis(AXIS_X_2, POS_MAX);
+    setAxis(AXIS_Y_2, POS_MAX);
 }
 
 
-typedef enum
-{
-	UNINITIALIZED,
-	NORMAL_MODE,
-	JUMP_RUN_MODE,
-} AdapterMode;
-
 int main(void)
 {
-	AdapterMode adapterMode = NORMAL_MODE;
-	AdapterMode lastAdapterMode = UNINITIALIZED;
+    AdapterMode adapterMode = NORMAL_MODE;
+    AdapterMode lastAdapterMode = UNINITIALIZED;
 
 start:
     cli();
@@ -312,21 +329,26 @@ start:
         // check if mode has changed, if it did change then reset ports
         if (adapterMode != lastAdapterMode)
         {
-        	setupGameport();
+            setupGameport();
         }
         lastAdapterMode = adapterMode;
 
         fillReportWithWii();
-        setGameport(adapterMode == JUMP_RUN_MODE);
+        setGameport(adapterMode);
         
         if (buttonPressed(BUTTON_SELECT, report) && buttonPressed(BUTTON_UP, report))
         {
-        	adapterMode = JUMP_RUN_MODE;
+            adapterMode = JUMP_RUN_MODE;
         }
 
         if (buttonPressed(BUTTON_SELECT, report) && buttonPressed(BUTTON_DOWN, report))
         {
-        	adapterMode = NORMAL_MODE;
+            adapterMode = NORMAL_MODE;
+        }
+
+        if (buttonPressed(BUTTON_SELECT, report) && buttonPressed(BUTTON_RIGHT, report))
+        {
+            adapterMode = NES_MODE;
         }
 
         /* If the gamepad starts feeding us 0xff, we have to restart to recover */
