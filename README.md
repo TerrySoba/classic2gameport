@@ -24,6 +24,6 @@ Adapter Modes
 
 | Mode | Combination | Description |
 |------|-------------|--|
-| Normal Mode | SELECT + DOWN | Button B -> 1<br>Button Y -> 2<br>Button A -> 3<br>Button Y -> 4 |
+| Normal Mode | SELECT + DOWN | Button B -> 1<br>Button Y -> 2<br>Button A -> 3<br>Button X -> 4 |
 | Jump'n'Run Mode | SELECT + UP | Button Y -> 1<br>Button A -> 2<br>Button B -> Up |
 | NES Mode | SELECT + RIGHT | Button A -> 1<br>Button B -> 2<br>Button START -> 3<br>Button SELECT -> 4 |
