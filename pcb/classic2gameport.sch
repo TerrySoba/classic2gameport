@@ -985,7 +985,7 @@ Text GLabel 9900 2350 0    50   Input ~ 0
 JS2_Y3
 Text GLabel 7800 2350 0    50   Input ~ 0
 JS2_Y1
-Text GLabel 3700 4800 2    50   Input ~ 0
+Text GLabel 10350 3700 2    50   Input ~ 0
 JS2_Y_AXIS
 Wire Wire Line
 	9250 3700 8200 3700
