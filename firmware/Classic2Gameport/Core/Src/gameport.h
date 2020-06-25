@@ -15,7 +15,7 @@ typedef enum
     AXIS_X1,
     AXIS_Y1,
     AXIS_X2,
-    AXIS_Y2,_
+    AXIS_Y2,
 } GameportAxis;
 
 typedef enum
