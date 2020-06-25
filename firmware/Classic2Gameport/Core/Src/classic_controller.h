@@ -7,7 +7,7 @@
 #ifndef SRC_CLASSIC_CONTROLLER_H_
 #define SRC_CLASSIC_CONTROLLER_H_
 
-#include "stm32f0xx_hal.h"
+#include "stm32g0xx_hal.h"
 
 #include <stdbool.h>
 

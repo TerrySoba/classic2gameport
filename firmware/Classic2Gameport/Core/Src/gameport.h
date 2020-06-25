@@ -30,6 +30,6 @@ bool setGameportAxis(GameportAxis axis, GameportAxisPosition position);
 
 bool setGameportButton(int button, bool pressed);
 
-void doStuff(uint16_t buttonData);
+// void doStuff(uint16_t buttonData);
 
 #endif /* SRC_GAMEPORT_H_ */

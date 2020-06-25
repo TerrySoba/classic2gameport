@@ -7,7 +7,7 @@
 #include "gameport.h"
 #include "classic_controller.h"
 
-#include "stm32f0xx_hal.h"
+#include "stm32g0xx_hal.h"
 
 bool setGameportAxis(GameportAxis axis, GameportAxisPosition position)
 {
@@ -150,6 +150,7 @@ typedef enum
 //0	L1	R1	Down	Up
 //0	Right	Left
 
+#if 0
 
 void doStuff(uint16_t buttonData)
 {
@@ -192,3 +193,5 @@ void doStuff(uint16_t buttonData)
     }
 
 }
+
+#endif
