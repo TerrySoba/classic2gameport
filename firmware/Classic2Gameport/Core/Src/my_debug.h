@@ -16,11 +16,11 @@ void debugPrint(const char *message);
 
 /*
 #define debugPrintf(message, ...) \
-	{ \
-		char buffer[20]; \
-		snprintf(buffer, 20, message, __VA_ARGS__); \
-		debugPrint(buffer);\
-	}
+    { \
+        char buffer[20]; \
+        snprintf(buffer, 20, message, __VA_ARGS__); \
+        debugPrint(buffer);\
+    }
 */
 
 #endif /* SRC_MY_DEBUG_H_ */

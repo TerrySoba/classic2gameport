@@ -13,21 +13,21 @@
 
 typedef enum
 {
-	CLASSIC_BTN_rT     = 1,
-	CLASSIC_BTN_start  = 2,
-	CLASSIC_BTN_home   = 3,
-	CLASSIC_BTN_select = 4,
-	CLASSIC_BTN_lT     = 5,
-	CLASSIC_BTN_down   = 6,
-	CLASSIC_BTN_right  = 7,
-	CLASSIC_BTN_up     = 8,
-	CLASSIC_BTN_left   = 9,
-	CLASSIC_BTN_rZ     = 10,
-	CLASSIC_BTN_x      = 11,
-	CLASSIC_BTN_a      = 12,
-	CLASSIC_BTN_y      = 13,
-	CLASSIC_BTN_b      = 14,
-	CLASSIC_BTN_lZ     = 15,
+    CLASSIC_BTN_rT     = 1,
+    CLASSIC_BTN_start  = 2,
+    CLASSIC_BTN_home   = 3,
+    CLASSIC_BTN_select = 4,
+    CLASSIC_BTN_lT     = 5,
+    CLASSIC_BTN_down   = 6,
+    CLASSIC_BTN_right  = 7,
+    CLASSIC_BTN_up     = 8,
+    CLASSIC_BTN_left   = 9,
+    CLASSIC_BTN_rZ     = 10,
+    CLASSIC_BTN_x      = 11,
+    CLASSIC_BTN_a      = 12,
+    CLASSIC_BTN_y      = 13,
+    CLASSIC_BTN_b      = 14,
+    CLASSIC_BTN_lZ     = 15,
 } ClassicButtons;
 
 
