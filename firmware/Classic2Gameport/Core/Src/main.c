@@ -97,9 +97,8 @@ int main(void)
 soft_reset:
 
   HAL_Delay(100);
-
   initializeClassicController(&hi2c1);
-
+  initializeClassicController(&hi2c2);
   HAL_Delay(100);
 
   /* USER CODE END 2 */
@@ -107,21 +106,23 @@ soft_reset:
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  uint16_t classicControllerButtons = 0;
+  uint16_t classicControllerButtons1 = 0;
+  uint16_t classicControllerButtons2 = 0;
 
   while (1)
   {
-    if (!readClassicControllerData(&hi2c1, &classicControllerButtons))
+    if (!readClassicControllerData(&hi2c1, &classicControllerButtons1) ||
+  		!readClassicControllerData(&hi2c2, &classicControllerButtons2))
     {
       goto soft_reset;
     }
 
-    if (isButtonPressed(CLASSIC_BTN_left, classicControllerButtons))
+    if (isButtonPressed(CLASSIC_BTN_left, classicControllerButtons1))
     {
       // HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, GPIO_PIN_SET);
       setGameportAxis(AXIS_X1, POSITION_MIN);
     }
-    else if (isButtonPressed(CLASSIC_BTN_right, classicControllerButtons))
+    else if (isButtonPressed(CLASSIC_BTN_right, classicControllerButtons1))
     {
       // HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, GPIO_PIN_RESET);
       setGameportAxis(AXIS_X1, POSITION_MAX);
@@ -131,11 +132,11 @@ soft_reset:
       setGameportAxis(AXIS_X1, POSITION_MIDDLE);
     }
 
-    if (isButtonPressed(CLASSIC_BTN_up, classicControllerButtons))
+    if (isButtonPressed(CLASSIC_BTN_up, classicControllerButtons1))
     {
       setGameportAxis(AXIS_Y1, POSITION_MIN);
     }
-    else if (isButtonPressed(CLASSIC_BTN_down, classicControllerButtons))
+    else if (isButtonPressed(CLASSIC_BTN_down, classicControllerButtons1))
     {
       setGameportAxis(AXIS_Y1, POSITION_MAX);
     }
@@ -144,10 +145,38 @@ soft_reset:
       setGameportAxis(AXIS_Y1, POSITION_MIDDLE);
     }
 
-    setGameportButton(0, isButtonPressed(CLASSIC_BTN_b, classicControllerButtons));
-    setGameportButton(1, isButtonPressed(CLASSIC_BTN_y, classicControllerButtons));
-    setGameportButton(2, isButtonPressed(CLASSIC_BTN_a, classicControllerButtons));
-    setGameportButton(3, isButtonPressed(CLASSIC_BTN_x, classicControllerButtons));
+    if (isButtonPressed(CLASSIC_BTN_left, classicControllerButtons2))
+	{
+	  // HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, GPIO_PIN_SET);
+	  setGameportAxis(AXIS_X2, POSITION_MIN);
+	}
+	else if (isButtonPressed(CLASSIC_BTN_right, classicControllerButtons2))
+	{
+	  // HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, GPIO_PIN_RESET);
+	  setGameportAxis(AXIS_X2, POSITION_MAX);
+	}
+	else
+	{
+	  setGameportAxis(AXIS_X2, POSITION_MIDDLE);
+	}
+
+	if (isButtonPressed(CLASSIC_BTN_up, classicControllerButtons2))
+	{
+	  setGameportAxis(AXIS_Y2, POSITION_MIN);
+	}
+	else if (isButtonPressed(CLASSIC_BTN_down, classicControllerButtons2))
+	{
+	  setGameportAxis(AXIS_Y2, POSITION_MAX);
+	}
+	else
+	{
+	  setGameportAxis(AXIS_Y2, POSITION_MIDDLE);
+	}
+
+    setGameportButton(0, isButtonPressed(CLASSIC_BTN_b, classicControllerButtons1));
+    setGameportButton(1, isButtonPressed(CLASSIC_BTN_y, classicControllerButtons1));
+    setGameportButton(2, isButtonPressed(CLASSIC_BTN_a, classicControllerButtons2));
+    setGameportButton(3, isButtonPressed(CLASSIC_BTN_x, classicControllerButtons2));
 
     // doStuff(classicControllerButtons);
 
