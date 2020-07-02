@@ -26,9 +26,23 @@ typedef enum
     POSITION_DISCONNECTED,
 } GameportAxisPosition;
 
+typedef struct
+{
+    bool button1;
+    bool button2;
+    bool button3;
+    bool button4;
+    GameportAxisPosition axisX1;
+    GameportAxisPosition axisY1;
+    GameportAxisPosition axisX2;
+    GameportAxisPosition axisY2;
+} GameportState;
+
 bool setGameportAxis(GameportAxis axis, GameportAxisPosition position);
 
 bool setGameportButton(int button, bool pressed);
+
+void setGameport(GameportState* state);
 
 // void doStuff(uint16_t buttonData);
 

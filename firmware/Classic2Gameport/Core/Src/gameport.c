@@ -164,6 +164,20 @@ bool setGameportButton(int button, bool pressed)
     return true;
 }
 
+void setGameport(GameportState* state)
+{
+    setGameportButton(0, state->button1);
+    setGameportButton(1, state->button2);
+    setGameportButton(2, state->button3);
+    setGameportButton(3, state->button4);
+    setGameportAxis(AXIS_X1, state->axisX1);
+    setGameportAxis(AXIS_Y1, state->axisY1);
+    setGameportAxis(AXIS_X2, state->axisX2);
+    setGameportAxis(AXIS_Y2, state->axisY2);
+}
+
+
+
 #define MY_NOP asm volatile("nop")
 
 typedef enum

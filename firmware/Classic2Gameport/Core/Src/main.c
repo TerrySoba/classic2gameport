@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "classic_controller.h"
 #include "gameport.h"
+#include "button_mapper.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -60,6 +61,49 @@ static void MX_I2C1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+ButtonMap buttonMapPort1[] =
+{
+    {1 << CLASSIC_BTN_left,  0, MAP_TYPE_AXIS, AXIS_X1, POSITION_MIN, 0},
+    {1 << CLASSIC_BTN_right, 0, MAP_TYPE_AXIS, AXIS_X1, POSITION_MAX, 0},
+    {1 << CLASSIC_BTN_up,    0, MAP_TYPE_AXIS, AXIS_Y1, POSITION_MIN, 0},
+    {1 << CLASSIC_BTN_down,  0, MAP_TYPE_AXIS, AXIS_Y1, POSITION_MAX, 0},
+    {1 << CLASSIC_BTN_a,     0, MAP_TYPE_BUTTON, 0, 0,                0},
+    {1 << CLASSIC_BTN_b,     0, MAP_TYPE_BUTTON, 0, 0,                1},
+    {1 << CLASSIC_BTN_x,     0, MAP_TYPE_BUTTON, 0, 0,                2},
+    {1 << CLASSIC_BTN_y,     0, MAP_TYPE_BUTTON, 0, 0,                3},
+    {0                 ,     0, MAP_TYPE_END,    0, 0,                0},
+};
+
+ButtonMap buttonMapPort2[] =
+{
+    {0, 1 << CLASSIC_BTN_left,  MAP_TYPE_AXIS, AXIS_X1, POSITION_MIN, 0},
+    {0, 1 << CLASSIC_BTN_right, MAP_TYPE_AXIS, AXIS_X1, POSITION_MAX, 0},
+    {0, 1 << CLASSIC_BTN_up,    MAP_TYPE_AXIS, AXIS_Y1, POSITION_MIN, 0},
+    {0, 1 << CLASSIC_BTN_down,  MAP_TYPE_AXIS, AXIS_Y1, POSITION_MAX, 0},
+    {0, 1 << CLASSIC_BTN_a,     MAP_TYPE_BUTTON, 0, 0,                0},
+    {0, 1 << CLASSIC_BTN_b,     MAP_TYPE_BUTTON, 0, 0,                1},
+    {0, 1 << CLASSIC_BTN_x,     MAP_TYPE_BUTTON, 0, 0,                2},
+    {0, 1 << CLASSIC_BTN_y,     MAP_TYPE_BUTTON, 0, 0,                3},
+    {0,                  0,     MAP_TYPE_END,    0, 0,                0},
+};
+
+ButtonMap buttonMapBoth[] =
+{
+    {1 << CLASSIC_BTN_left,  0, MAP_TYPE_AXIS, AXIS_X1, POSITION_MIN, 0},
+    {1 << CLASSIC_BTN_right, 0, MAP_TYPE_AXIS, AXIS_X1, POSITION_MAX, 0},
+    {1 << CLASSIC_BTN_up,    0, MAP_TYPE_AXIS, AXIS_Y1, POSITION_MIN, 0},
+    {1 << CLASSIC_BTN_down,  0, MAP_TYPE_AXIS, AXIS_Y1, POSITION_MAX, 0},
+    {0, 1 << CLASSIC_BTN_left,  MAP_TYPE_AXIS, AXIS_X2, POSITION_MIN, 0},
+    {0, 1 << CLASSIC_BTN_right, MAP_TYPE_AXIS, AXIS_X2, POSITION_MAX, 0},
+    {0, 1 << CLASSIC_BTN_up,    MAP_TYPE_AXIS, AXIS_Y2, POSITION_MIN, 0},
+    {0, 1 << CLASSIC_BTN_down,  MAP_TYPE_AXIS, AXIS_Y2, POSITION_MAX, 0},
+    {1 << CLASSIC_BTN_b,     0, MAP_TYPE_BUTTON, 0, 0,                0},
+    {1 << CLASSIC_BTN_y,     0, MAP_TYPE_BUTTON, 0, 0,                1},
+    {0, 1 << CLASSIC_BTN_b,     MAP_TYPE_BUTTON, 0, 0,                2},
+    {0, 1 << CLASSIC_BTN_y,     MAP_TYPE_BUTTON, 0, 0,                3},
+    {0,                  0,     MAP_TYPE_END,    0, 0,                0},
+};
 
 /* USER CODE END 0 */
 
@@ -111,74 +155,34 @@ soft_reset:
 
   while (1)
   {
-    if (!readClassicControllerData(&hi2c1, &classicControllerButtons1) ||
-  		!readClassicControllerData(&hi2c2, &classicControllerButtons2))
+    bool pad1Ready = readClassicControllerData(&hi2c1, &classicControllerButtons1);
+    bool pad2Ready = readClassicControllerData(&hi2c2, &classicControllerButtons2);
+
+
+    if (!pad1Ready && !pad2Ready)
     {
       goto soft_reset;
     }
 
-    if (isButtonPressed(CLASSIC_BTN_left, classicControllerButtons1))
+    ButtonMap* map;
+
+
+    if (pad1Ready && pad2Ready)
     {
-      // HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, GPIO_PIN_SET);
-      setGameportAxis(AXIS_X1, POSITION_MIN);
+      map = buttonMapBoth;
     }
-    else if (isButtonPressed(CLASSIC_BTN_right, classicControllerButtons1))
+    else if (pad1Ready)
     {
-      // HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, GPIO_PIN_RESET);
-      setGameportAxis(AXIS_X1, POSITION_MAX);
+      map = buttonMapPort1;
     }
     else
     {
-      setGameportAxis(AXIS_X1, POSITION_MIDDLE);
+      map = buttonMapPort2;
     }
+  
 
-    if (isButtonPressed(CLASSIC_BTN_up, classicControllerButtons1))
-    {
-      setGameportAxis(AXIS_Y1, POSITION_MIN);
-    }
-    else if (isButtonPressed(CLASSIC_BTN_down, classicControllerButtons1))
-    {
-      setGameportAxis(AXIS_Y1, POSITION_MAX);
-    }
-    else
-    {
-      setGameportAxis(AXIS_Y1, POSITION_MIDDLE);
-    }
-
-    if (isButtonPressed(CLASSIC_BTN_left, classicControllerButtons2))
-	{
-	  // HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, GPIO_PIN_SET);
-	  setGameportAxis(AXIS_X2, POSITION_MIN);
-	}
-	else if (isButtonPressed(CLASSIC_BTN_right, classicControllerButtons2))
-	{
-	  // HAL_GPIO_WritePin(GPIOF, GPIO_PIN_0, GPIO_PIN_RESET);
-	  setGameportAxis(AXIS_X2, POSITION_MAX);
-	}
-	else
-	{
-	  setGameportAxis(AXIS_X2, POSITION_MIDDLE);
-	}
-
-	if (isButtonPressed(CLASSIC_BTN_up, classicControllerButtons2))
-	{
-	  setGameportAxis(AXIS_Y2, POSITION_MIN);
-	}
-	else if (isButtonPressed(CLASSIC_BTN_down, classicControllerButtons2))
-	{
-	  setGameportAxis(AXIS_Y2, POSITION_MAX);
-	}
-	else
-	{
-	  setGameportAxis(AXIS_Y2, POSITION_MIDDLE);
-	}
-
-    setGameportButton(0, isButtonPressed(CLASSIC_BTN_b, classicControllerButtons1));
-    setGameportButton(1, isButtonPressed(CLASSIC_BTN_y, classicControllerButtons1));
-    setGameportButton(2, isButtonPressed(CLASSIC_BTN_a, classicControllerButtons2));
-    setGameportButton(3, isButtonPressed(CLASSIC_BTN_x, classicControllerButtons2));
-
-    // doStuff(classicControllerButtons);
+    GameportState gameportState = mapButtons(classicControllerButtons1, classicControllerButtons2, map);
+    setGameport(&gameportState);
 
     /* USER CODE END WHILE */
 
