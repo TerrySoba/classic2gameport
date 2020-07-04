@@ -64,8 +64,8 @@ static void MX_I2C1_Init(void);
 
 ButtonMap buttonMapPort1[] =
 {
-    {MAP_TYPE_AXIS, true, 0, 0, AXIS_X2, POSITION_DISCONNECTED, 0},
-    {MAP_TYPE_AXIS, true, 0, 0, AXIS_Y2, POSITION_DISCONNECTED, 0},
+    {MAP_TYPE_AXIS, true, 0, 0,                       AXIS_X2, POSITION_DISCONNECTED, 0},
+    {MAP_TYPE_AXIS, true, 0, 0,                       AXIS_Y2, POSITION_DISCONNECTED, 0},
     {MAP_TYPE_AXIS, false, 1 << CLASSIC_BTN_left,  0, AXIS_X1, POSITION_MIN, 0},
     {MAP_TYPE_AXIS, false, 1 << CLASSIC_BTN_right, 0, AXIS_X1, POSITION_MAX, 0},
     {MAP_TYPE_AXIS, false, 1 << CLASSIC_BTN_up,    0, AXIS_Y1, POSITION_MIN, 0},
@@ -74,13 +74,27 @@ ButtonMap buttonMapPort1[] =
     {MAP_TYPE_BUTTON, false, 1 << CLASSIC_BTN_y,     0, 0, 0,                1},
     {MAP_TYPE_BUTTON, false, 1 << CLASSIC_BTN_a,     0, 0, 0,                2},
     {MAP_TYPE_BUTTON, false, 1 << CLASSIC_BTN_x,     0, 0, 0,                3},
-    {MAP_TYPE_END,    false, 0                 ,     0,     0, 0,            0},
+    {MAP_TYPE_END,    false, 0                 ,     0, 0, 0,                0},
+};
+
+ButtonMap buttonMapPort1Jnr[] =
+{
+    {MAP_TYPE_AXIS, true, 0, 0,                       AXIS_X2, POSITION_DISCONNECTED, 0},
+    {MAP_TYPE_AXIS, true, 0, 0,                       AXIS_Y2, POSITION_DISCONNECTED, 0},
+    {MAP_TYPE_AXIS, false, 1 << CLASSIC_BTN_left,  0, AXIS_X1, POSITION_MIN, 0},
+    {MAP_TYPE_AXIS, false, 1 << CLASSIC_BTN_right, 0, AXIS_X1, POSITION_MAX, 0},
+    {MAP_TYPE_AXIS, false, 1 << CLASSIC_BTN_up,    0, AXIS_Y1, POSITION_MIN, 0},
+    {MAP_TYPE_AXIS, false, 1 << CLASSIC_BTN_b,     0, AXIS_Y1, POSITION_MIN, 0}, // b is mapped to up
+    {MAP_TYPE_AXIS, false, 1 << CLASSIC_BTN_down,  0, AXIS_Y1, POSITION_MAX, 0},
+    {MAP_TYPE_BUTTON, false, 1 << CLASSIC_BTN_y,     0, 0, 0,                0},
+    {MAP_TYPE_BUTTON, false, 1 << CLASSIC_BTN_a,     0, 0, 0,                1},
+    {MAP_TYPE_END,    false, 0                 ,     0, 0, 0,                0},
 };
 
 ButtonMap buttonMapPort2[] =
 {
-    {MAP_TYPE_AXIS, true, 0, 0, AXIS_X2, POSITION_DISCONNECTED, 0},
-    {MAP_TYPE_AXIS, true, 0, 0, AXIS_Y2, POSITION_DISCONNECTED, 0},
+    {MAP_TYPE_AXIS, true, 0, 0,                       AXIS_X2, POSITION_DISCONNECTED, 0},
+    {MAP_TYPE_AXIS, true, 0, 0,                       AXIS_Y2, POSITION_DISCONNECTED, 0},
     {MAP_TYPE_AXIS, false, 0, 1 << CLASSIC_BTN_left,  AXIS_X1, POSITION_MIN, 0},
     {MAP_TYPE_AXIS, false, 0, 1 << CLASSIC_BTN_right, AXIS_X1, POSITION_MAX, 0},
     {MAP_TYPE_AXIS, false, 0, 1 << CLASSIC_BTN_up,    AXIS_Y1, POSITION_MIN, 0},
@@ -89,6 +103,20 @@ ButtonMap buttonMapPort2[] =
     {MAP_TYPE_BUTTON, false, 0, 1 << CLASSIC_BTN_y,     0, 0,                1},
     {MAP_TYPE_BUTTON, false, 0, 1 << CLASSIC_BTN_a,     0, 0,                2},
     {MAP_TYPE_BUTTON, false, 0, 1 << CLASSIC_BTN_x,     0, 0,                3},
+    {MAP_TYPE_END,  false, 0,                  0,       0, 0,                0},
+};
+
+ButtonMap buttonMapPort2Jnr[] =
+{
+    {MAP_TYPE_AXIS, true, 0, 0,                       AXIS_X2, POSITION_DISCONNECTED, 0},
+    {MAP_TYPE_AXIS, true, 0, 0,                       AXIS_Y2, POSITION_DISCONNECTED, 0},
+    {MAP_TYPE_AXIS, false, 0, 1 << CLASSIC_BTN_left,  AXIS_X1, POSITION_MIN, 0},
+    {MAP_TYPE_AXIS, false, 0, 1 << CLASSIC_BTN_right, AXIS_X1, POSITION_MAX, 0},
+    {MAP_TYPE_AXIS, false, 0, 1 << CLASSIC_BTN_up,    AXIS_Y1, POSITION_MIN, 0},
+    {MAP_TYPE_AXIS, false, 0, 1 << CLASSIC_BTN_b,     AXIS_Y1, POSITION_MIN, 0}, // b is mapped to up
+    {MAP_TYPE_AXIS, false, 0, 1 << CLASSIC_BTN_down,  AXIS_Y1, POSITION_MAX, 0},
+    {MAP_TYPE_BUTTON, false, 0, 1 << CLASSIC_BTN_y,     0, 0,                0},
+    {MAP_TYPE_BUTTON, false, 0, 1 << CLASSIC_BTN_a,     0, 0,                1},
     {MAP_TYPE_END,  false, 0,                  0,       0, 0,                0},
 };
 
@@ -109,10 +137,29 @@ ButtonMap buttonMapBoth[] =
     {MAP_TYPE_END, false, 0,                  0,        0, 0,                0},
 };
 
+ButtonMap buttonMapBothJnr[] =
+{
+    {MAP_TYPE_AXIS, false, 1 << CLASSIC_BTN_left,  0, AXIS_X1, POSITION_MIN, 0},
+    {MAP_TYPE_AXIS, false, 1 << CLASSIC_BTN_right, 0, AXIS_X1, POSITION_MAX, 0},
+    {MAP_TYPE_AXIS, false, 1 << CLASSIC_BTN_up,    0, AXIS_Y1, POSITION_MIN, 0},
+    {MAP_TYPE_AXIS, false, 1 << CLASSIC_BTN_b,     0, AXIS_Y1, POSITION_MIN, 0}, // b is also mapped to up
+    {MAP_TYPE_AXIS, false, 1 << CLASSIC_BTN_down,  0, AXIS_Y1, POSITION_MAX, 0},
+    {MAP_TYPE_AXIS, false, 0, 1 << CLASSIC_BTN_left,  AXIS_X2, POSITION_MIN, 0},
+    {MAP_TYPE_AXIS, false, 0, 1 << CLASSIC_BTN_right, AXIS_X2, POSITION_MAX, 0},
+    {MAP_TYPE_AXIS, false, 0, 1 << CLASSIC_BTN_up,    AXIS_Y2, POSITION_MIN, 0},
+    {MAP_TYPE_AXIS, false, 0, 1 << CLASSIC_BTN_b,     AXIS_Y2, POSITION_MIN, 0}, // b is also mapped to up
+    {MAP_TYPE_AXIS, false, 0, 1 << CLASSIC_BTN_down,  AXIS_Y2, POSITION_MAX, 0},
+    {MAP_TYPE_BUTTON, false, 1 << CLASSIC_BTN_y,    0,  0, 0,                0},
+    {MAP_TYPE_BUTTON, false, 1 << CLASSIC_BTN_a,    0,  0, 0,                1},
+    {MAP_TYPE_BUTTON, false, 0, 1 << CLASSIC_BTN_y,     0, 0,                2},
+    {MAP_TYPE_BUTTON, false, 0, 1 << CLASSIC_BTN_a,     0, 0,                3},
+    {MAP_TYPE_END, false, 0,                  0,        0, 0,                0},
+};
 
 static const uint16_t normalModeButtons = ~(1 << CLASSIC_BTN_select | 1 << CLASSIC_BTN_down);
 static const uint16_t jumpAndRunModeButtons = ~(1 << CLASSIC_BTN_select | 1 << CLASSIC_BTN_up);
-static const uint16_t nesModeButtons = ~(1 << CLASSIC_BTN_select | 1 << CLASSIC_BTN_right);
+
+bool jumpAndRunMode = false;
 
 /* USER CODE END 0 */
 
@@ -175,14 +222,14 @@ soft_reset:
 
     if (jumpAndRunModeButtons == classicControllerButtons1 || jumpAndRunModeButtons == classicControllerButtons2)
     {
-      // enable LED
-      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);
+      jumpAndRunMode = true;
     }
-    else
+
+    if (normalModeButtons == classicControllerButtons1 || normalModeButtons == classicControllerButtons2)
     {
-      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);
+      jumpAndRunMode = false;
     }
-    
+
 
 
     ButtonMap* map;
@@ -190,15 +237,15 @@ soft_reset:
 
     if (pad1Ready && pad2Ready)
     {
-      map = buttonMapBoth;
+      map = jumpAndRunMode?buttonMapBothJnr:buttonMapBoth;
     }
     else if (pad1Ready)
     {
-      map = buttonMapPort1;
+      map = jumpAndRunMode?buttonMapPort1Jnr:buttonMapPort1;
     }
     else
     {
-      map = buttonMapPort2;
+      map = jumpAndRunMode?buttonMapPort2Jnr:buttonMapPort2;
     }
   
 
