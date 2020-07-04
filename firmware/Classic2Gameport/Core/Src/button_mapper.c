@@ -19,7 +19,9 @@ GameportState mapButtons(uint16_t controller1, uint16_t controller2, ButtonMap* 
         if (map->type == MAP_TYPE_END) break;
 
         // check if controller input matches mask
-        if ((~controller1) & map->buttonMask1 || (~controller2) & map->buttonMask2)
+        if ((~controller1) & map->buttonMask1 ||
+            (~controller2) & map->buttonMask2 ||
+            map->force)
         {
             switch(map->type)
             {
