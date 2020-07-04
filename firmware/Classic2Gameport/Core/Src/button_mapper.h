@@ -16,11 +16,10 @@ typedef enum
 
 typedef struct 
 {
+    MapType type;
     bool force;             // if this is set to true, the map sill always be used regardles of button input
     uint16_t buttonMask1;   // mask to be applied to controller1
     uint16_t buttonMask2;   // mask to be applied to controller2
-
-    MapType type;
     GameportAxis axis;
     GameportAxisPosition position;
     int gameportButton;
