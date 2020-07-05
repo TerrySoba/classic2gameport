@@ -31,6 +31,7 @@ Building Instructions
 
 Here are some images of the assembled adapter:
 
+![pcb v4 front](images/finished_adapter.jpg "The finished adapter")
 ![pcb v4 front](images/pcb_v4_front.jpg "PCB Version 4 Front")
 ![pcb v4 back](images/pcb_v4_back.jpg "PCB Version 4 Back")
 

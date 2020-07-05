@@ -72,8 +72,10 @@ ButtonMap buttonMapPort1[] =
     {MAP_TYPE_AXIS, false, 1 << CLASSIC_BTN_down,  0, AXIS_Y1, POSITION_MAX, 0},
     {MAP_TYPE_BUTTON, false, 1 << CLASSIC_BTN_b,     0, 0, 0,                0},
     {MAP_TYPE_BUTTON, false, 1 << CLASSIC_BTN_y,     0, 0, 0,                1},
+	{MAP_TYPE_BUTTON, false, 1 << CLASSIC_BTN_select,0, 0, 0,                1},
     {MAP_TYPE_BUTTON, false, 1 << CLASSIC_BTN_a,     0, 0, 0,                2},
     {MAP_TYPE_BUTTON, false, 1 << CLASSIC_BTN_x,     0, 0, 0,                3},
+	{MAP_TYPE_BUTTON, false, 1 << CLASSIC_BTN_start, 0, 0, 0,                3},
     {MAP_TYPE_END,    false, 0                 ,     0, 0, 0,                0},
 };
 
@@ -101,8 +103,10 @@ ButtonMap buttonMapPort2[] =
     {MAP_TYPE_AXIS, false, 0, 1 << CLASSIC_BTN_down,  AXIS_Y1, POSITION_MAX, 0},
     {MAP_TYPE_BUTTON, false, 0, 1 << CLASSIC_BTN_b,     0, 0,                0},
     {MAP_TYPE_BUTTON, false, 0, 1 << CLASSIC_BTN_y,     0, 0,                1},
+	{MAP_TYPE_BUTTON, false, 0, 1 << CLASSIC_BTN_select,0, 0,                1},
     {MAP_TYPE_BUTTON, false, 0, 1 << CLASSIC_BTN_a,     0, 0,                2},
     {MAP_TYPE_BUTTON, false, 0, 1 << CLASSIC_BTN_x,     0, 0,                3},
+	{MAP_TYPE_BUTTON, false, 0, 1 << CLASSIC_BTN_start, 0, 0,                3},
     {MAP_TYPE_END,  false, 0,                  0,       0, 0,                0},
 };
 
